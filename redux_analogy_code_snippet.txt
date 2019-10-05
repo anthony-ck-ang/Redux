@@ -1,0 +1,88 @@
+console.clear()
+
+//action creater
+const createPolicy = (name, amount) => {
+  //create new action obj; new claim form
+  return {
+    type: "CREATE_POLICY",
+    payload: {
+      name: name,
+      amount: amount
+    }
+  };
+};
+
+const createClaim = (name, claimAmount) => {
+  return {
+    type: "CREATE_CLAIM",
+    payload: {
+      name: name,
+      claimAmount: claimAmount
+    }
+  };
+};
+
+const deletePolicy = (name) => {
+  return {
+    type: "DELETE_POLICY",
+    payload: {
+      name:name
+    }
+  };
+};
+
+
+//reducers; departments
+const claimHistory = (oldListOfClaims = [], action) => {
+  if (action.type === "CREATE_CLAIM") {
+    return [...oldListOfClaims, action.payload];
+  }
+  return oldListOfClaims;
+};
+
+const accounting = (bagOfMoney = 100, action) => {
+  if (action.type === "CREATE_CLAIM"){
+    return bagOfMoney - action.payload.claimAmount;
+  } else if (action.type === "CREATE_POLICY"){
+    return bagOfMoney + action.payload.amount;
+  }
+  
+  return bagOfMoney;
+};
+
+const policies = (OldlistOfPolicies = [], action) => {
+  if(action.type === "CREATE_POLICY"){
+    return [...OldlistOfPolicies, action.payload.name];
+  } else if (action.type === "DELETE_POLICY"){
+    return OldlistOfPolicies.filter(name => name != action.payload.name); 
+    //return new filtered array
+  }
+  
+  return OldlistOfPolicies;
+};
+
+console.log(Redux);
+const {createStore, combineReducers} = Redux; // function from redux lib
+
+//wire up all reducers functions together -> "combined state object"
+const ourDepartments = combineReducers({
+  accounting: accounting,
+  claimHistory: claimHistory,
+  policies: policies
+});
+
+const store = createStore(ourDepartments);
+
+
+//Cycle: ActionCreator -> Action; createPolicy() -> Dispatch to all Reducers -> Update State; combinedReducers
+store.dispatch(createPolicy("Alex", 20)); //each is x 1 full redux cycle
+store.dispatch(createPolicy("Jim", 30)); //only way to modify data is through action creators
+store.dispatch(createPolicy("John", 40)); //cannot directly reach in state object to modify
+console.log(store.getState());
+
+store.dispatch(createClaim("Alex", 50));
+console.log(store.getState());
+store.dispatch(deletePolicy("Alex"));
+console.log(store.getState());
+
+
