@@ -1,6 +1,6 @@
 # Redux
 
-Redux analogy
+redux_analogy_code_snippet
 
 Past code into link below:
 https://codepen.io
